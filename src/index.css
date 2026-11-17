@@ -1,0 +1,119 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-cream-50 text-ink-800 font-sans antialiased;
+  }
+
+  ::selection {
+    @apply bg-saffron-200 text-saffron-900;
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    font: inherit;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-bold transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-saffron-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .btn-primary {
+    @apply btn bg-saffron-600 text-white shadow-soft hover:-translate-y-0.5 hover:bg-saffron-700;
+  }
+
+  .btn-secondary {
+    @apply btn border border-ink-800/10 bg-white text-ink-800 hover:border-saffron-300 hover:bg-cream-100;
+  }
+
+  .btn-ghost {
+    @apply btn text-ink-700 hover:bg-cream-200;
+  }
+
+  .field {
+    @apply w-full rounded-xl border border-ink-800/[0.12] bg-white px-3.5 py-2.5 text-sm text-ink-900 placeholder:text-ink-500/70 shadow-sm outline-none transition focus:border-saffron-400 focus:ring-2 focus:ring-saffron-100;
+  }
+
+  .label {
+    @apply mb-1.5 block text-xs font-bold uppercase tracking-wide text-ink-700;
+  }
+
+  .card {
+    @apply rounded-2xl border border-ink-800/[0.08] bg-white shadow-card;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-bold transition;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Leaflet map theming */
+.leaflet-container {
+  font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  background: #f3f0e9;
+  border-radius: 1rem;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 1rem !important;
+  padding: 0 !important;
+  box-shadow: 0 12px 36px -10px rgba(15, 23, 42, 0.35) !important;
+  overflow: hidden;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+  width: 250px !important;
+}
+
+.leaflet-popup-tip {
+  box-shadow: none !important;
+}
+
+.event-pin-wrapper {
+  background: transparent;
+  border: none;
+}
+
+.event-pin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50% 50% 50% 4px;
+  transform: rotate(-45deg);
+  border: 3px solid #fff;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.35);
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  transition: transform 0.15s ease;
+}
+
+.event-pin:hover {
+  transform: rotate(-45deg) scale(1.15);
+}
+
+.event-pin span {
+  transform: rotate(45deg);
+}

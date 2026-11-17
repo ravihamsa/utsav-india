@@ -1,0 +1,33 @@
+Plan: India-Wide Events Platform — Now with Calendar and Map Views
+
+Great additions — both fit naturally into the discovery experience. Here's the updated plan, with the two new views built into the browsing section. The database connection still isn't active in this planning session, so setting it up will be the first build step.
+
+1. Accounts and Sign-In
+
+Build sign-up and sign-in pages using email and password
+Keep users signed in between visits, with a sign-out option and account menu in the header
+2. Home Page and Event Browsing — Three Ways to Explore
+
+Keep the home page with hero, "happening this week", and event cards, plus keyword search and filters for city, category, date range, and free vs paid
+List view (default): event cards sorted by soonest date or newest posted
+Calendar view (new): a month-style calendar where each day shows dots or chips for events on that date; clicking a day shows that day's events, and the city and category filters apply here too
+Map view (new): an interactive India map with pins for events in the currently filtered city or cities; clicking a pin shows a small event preview card with photo, date, and a link to the full details page
+3. Event Details Page
+
+Full description, date and time, venue address, organizer, pricing, and a prominent "Register" button linking to the event's own registration site
+Show related events from the same city or category
+4. Favourites, Reminders, and Interests
+
+Heart icon on every event to save favourites to a "My Favourites" page
+Set reminders for events (choosing how long before they start) and view them in "My Reminders"
+Interests picker (music, food, tech, culture, sports, etc.) during sign-up and on the profile, powering a personalized "Recommended for you" section on the home page
+5. Event Submission and Admin Approval
+
+"Submit an Event" form for organizers: title, description, category, city, date, venue with map location, image, and registration link — open to anyone
+Submissions stay hidden as "pending" until an admin approves them in a protected admin review view (approve or reject)
+6. Design and Polish
+
+Vibrant India-inspired palette (no purple tones), Lucide icons, category color coding, fully responsive
+City quick-navigation strip, graceful loading and empty states
+Map view will use a smooth fallback experience if an interactive map can't be loaded (city-grouped pin list with the same preview cards), so it always works
+Summary: the plan now gives visitors three complementary ways to discover events — a filtered list, a month calendar showing what's on each day, and a map with clickable event pins — all driven by the same city and category filters, on top of accounts, favourites, reminders, interests, and admin-approved submissions. Switch to build mode when you're ready and I'll implement it.
