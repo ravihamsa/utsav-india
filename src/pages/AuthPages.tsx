@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 import { ErrorBanner } from '../components/UI'
 import { useAuth } from '../context/AuthContext'
+import { usePrivateSeo } from '../hooks/useSeo'
 import { useToast } from '../context/ToastContext'
 import { CATEGORIES } from '../lib/constants'
 import { SEED_ACCOUNTS, type SeedAccount } from '../lib/seedData'
@@ -88,6 +89,7 @@ function LocalDataHint() {
 }
 
 export function SignInPage() {
+  usePrivateSeo('Sign in', 'Sign in to your Utsav India account to save events and set reminders.')
   const { signIn } = useAuth()
   const { show } = useToast()
   const navigate = useNavigate()
@@ -229,6 +231,7 @@ export function SignInPage() {
 }
 
 export function SignUpPage() {
+  usePrivateSeo('Create an account', 'Join Utsav India to discover, save and share events across India.')
   const { signUp } = useAuth()
   const { show } = useToast()
   const navigate = useNavigate()

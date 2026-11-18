@@ -4,6 +4,7 @@ import { Check, Clock, PlusCircle, ShieldCheck, XCircle } from 'lucide-react'
 import { EmptyState, PageHeading } from '../components/UI'
 import { useAuth } from '../context/AuthContext'
 import { useData } from '../context/DataContext'
+import { usePrivateSeo } from '../hooks/useSeo'
 import { useToast } from '../context/ToastContext'
 import { CATEGORIES } from '../lib/constants'
 import { formatDate } from '../lib/dateUtils'
@@ -16,6 +17,7 @@ const statusStyles: Record<EventStatus, string> = {
 }
 
 export default function ProfilePage() {
+  usePrivateSeo('My profile', 'Manage your Utsav India profile and interests.')
   const { user, profile, isAdmin, updateProfile } = useAuth()
   const { mySubmissions } = useData()
   const { show } = useToast()

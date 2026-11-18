@@ -9,6 +9,7 @@ import {
 } from 'lucide-react'
 import { EmptyState, ErrorBanner, PageHeading, Spinner } from '../components/UI'
 import { useData } from '../context/DataContext'
+import { usePrivateSeo } from '../hooks/useSeo'
 import { useToast } from '../context/ToastContext'
 import { formatDate } from '../lib/dateUtils'
 import type { EventStatus } from '../lib/types'
@@ -27,6 +28,7 @@ const statusStyles: Record<EventStatus, string> = {
 }
 
 export default function AdminPage() {
+  usePrivateSeo('Admin review', 'Review submitted events on Utsav India.')
   const { allEvents, changeEventStatus, loading, error } = useData()
   const { show } = useToast()
   const [tab, setTab] = useState<EventStatus | 'all'>('pending')

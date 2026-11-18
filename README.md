@@ -166,21 +166,48 @@ approve or reject the seeded pending submissions.
 1. Push this folder to a GitHub/GitLab/Bitbucket repository.
 2. In Vercel, click **Add New → Project** and import that repository. Framework
    preset **Vite** is detected automatically; leave build settings as-is.
-3. Under **Environment Variables**, add exactly these two (for Production,
-   Preview and Development):
+3. Under **Environment Variables**, add these (for Production, Preview and
+   Development):
 
    | Name | Value |
    | --- | --- |
    | `VITE_SUPABASE_URL` | your Supabase project URL |
    | `VITE_SUPABASE_ANON_KEY` | your Supabase anon/public key |
+   | `VITE_SITE_URL` | `https://utsav-india.vercel.app` (or your own domain) |
 
-4. Click **Deploy**. `vercel.json` includes an SPA rewrite, so direct links to
-   `/city/Mumbai`, `/events/...` and `/favourites` work after a refresh.
+4. Click **Deploy**. `vercel.json` routes every page request through
+   `api/seo.ts`, which returns the SPA shell with route-specific Open Graph
+   tags already in the HTML. Static files (JS, CSS, images) are served directly.
 5. Copy the deployment URL back into Supabase's **Site URL / Redirect URLs**
    (step 4 above), then redeploy if you changed env vars.
 
 > Vite embeds `VITE_*` values into the JavaScript at **build time**. If you add
 > or change an env var later, you must **Redeploy** (not just save the setting).
+
+## SEO and link previews
+
+Social apps (WhatsApp, Telegram, Facebook, LinkedIn, X) do **not** run
+JavaScript. They read Open Graph tags from the raw HTML returned by the server.
+A plain Vite SPA can't do that on its own, so this project uses:
+
+- `api/seo.ts` — a Vercel **Edge Function** that injects the right `<title>`,
+  `description`, canonical URL, `og:*`, `twitter:*` and JSON-LD into
+  `index.html` for the requested route before responding. City pages get their
+  own title/description; event pages fetch the event from Supabase and use its
+  title, description and image.
+- `src/hooks/useSeo.ts` — keeps the same tags up to date in the browser after
+  client-side navigation, and adds JSON-LD `Event`/`CollectionPage` data.
+- `public/og-image.png` — a 1200×630 branded fallback image. Event shares use
+  the event's own photo instead.
+- `public/robots.txt` and `public/sitemap.xml` — crawler hints for the home and
+  city pages (event pages are discovered from listings).
+
+**After deploying, check a link in WhatsApp.** If you shared it before this
+update, WhatsApp may have cached the old preview. Use the
+[Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/) with
+your URL and click **Scrape Again**, or temporarily append `?v=2` to the URL.
+Preview images must be publicly reachable over HTTPS; `VITE_SITE_URL` controls
+the absolute URLs in the tags.
 
 ## Data model
 

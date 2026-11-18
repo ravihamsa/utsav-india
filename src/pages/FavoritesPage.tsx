@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom'
 import EventCard from '../components/EventCard'
 import { EmptyState, ErrorBanner, PageHeading } from '../components/UI'
 import { useData } from '../context/DataContext'
+import { usePrivateSeo } from '../hooks/useSeo'
 
 export default function FavoritesPage() {
+  usePrivateSeo('My favourites', 'Events you have saved on Utsav India.')
   const { events, mySubmissions, favorites, loading, error } = useData()
   const saved = [...events, ...mySubmissions].filter((e) =>
     favorites.includes(e.id)

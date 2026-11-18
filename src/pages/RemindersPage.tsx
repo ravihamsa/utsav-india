@@ -2,10 +2,12 @@ import { Link } from 'react-router-dom'
 import { Bell, CalendarDays, Clock, MapPin, Trash2 } from 'lucide-react'
 import { EmptyState, ErrorBanner, PageHeading } from '../components/UI'
 import { useData } from '../context/DataContext'
+import { usePrivateSeo } from '../hooks/useSeo'
 import { REMINDER_OPTIONS } from '../lib/constants'
 import { formatDate, formatTime, relativeTime } from '../lib/dateUtils'
 
 export default function RemindersPage() {
+  usePrivateSeo('My reminders', 'Reminders you have set for upcoming events on Utsav India.')
   const { reminders, events, mySubmissions, deleteReminder, loading, error } =
     useData()
 

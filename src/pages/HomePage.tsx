@@ -18,7 +18,14 @@ import ListView from '../components/ListView'
 import { EmptyState, ErrorBanner, LoadingGrid } from '../components/UI'
 import { useFilters, filterEvents } from '../hooks/useFilters'
 import { useCityNavigate } from '../hooks/useCityNavigate'
+import { useSeo } from '../hooks/useSeo'
 import { CATEGORY_MAP, CITY_MAP } from '../lib/constants'
+import {
+  DEFAULT_DESCRIPTION,
+  DEFAULT_TITLE,
+  SITE_NAME,
+  absoluteUrl,
+} from '../lib/seo'
 import { cityPath } from '../lib/navigation'
 import { isSupabaseConfigured } from '../lib/supabase'
 
@@ -30,6 +37,27 @@ export default function HomePage() {
   const { filters, view, setFilters, setView, clearFilters } = useFilters()
   const [params] = useSearchParams()
   const goToCity = useCityNavigate()
+
+  useSeo({
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+    path: '/',
+    jsonLd: {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: SITE_NAME,
+      url: absoluteUrl('/'),
+      description: DEFAULT_DESCRIPTION,
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: {
+          '@type': 'EntryPoint',
+          urlTemplate: `${absoluteUrl('/')}?q={search_term_string}`,
+        },
+        'query-input': 'required name=search_term_string',
+      },
+    },
+  })
 
   const filtered = useMemo(
     () => filterEvents(events, filters),

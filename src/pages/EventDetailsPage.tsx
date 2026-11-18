@@ -24,8 +24,59 @@ import {
 import { useAuth } from '../context/AuthContext'
 import { useData } from '../context/DataContext'
 import { useToast } from '../context/ToastContext'
-import { CATEGORY_MAP } from '../lib/constants'
+import { useSeo } from '../hooks/useSeo'
+import { CATEGORY_MAP, CITY_MAP } from '../lib/constants'
 import { formatLongDate, formatTime } from '../lib/dateUtils'
+import {
+  DEFAULT_DESCRIPTION,
+  DEFAULT_IMAGE,
+  SITE_NAME,
+  absoluteImageUrl,
+  absoluteUrl,
+  seoSnippet,
+} from '../lib/seo'
+import type { EventItem } from '../lib/types'
+
+function eventJsonLd(event: EventItem): Record<string, unknown> {
+  const city = CITY_MAP[event.city]
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    name: event.title,
+    description: seoSnippet(event.description),
+    startDate: event.starts_at,
+    ...(event.ends_at ? { endDate: event.ends_at } : {}),
+    eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    eventType: CATEGORY_MAP[event.category]?.label,
+    image: absoluteImageUrl(event.image_url),
+    url: absoluteUrl(`/events/${event.id}`),
+    location: {
+      '@type': 'Place',
+      name: event.venue_name,
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: event.venue_address,
+        addressLocality: event.city,
+        addressRegion: city?.state,
+        addressCountry: 'IN',
+      },
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: event.latitude,
+        longitude: event.longitude,
+      },
+    },
+    organizer: { '@type': 'Organization', name: event.organizer_name },
+    offers: {
+      '@type': 'Offer',
+      url: event.registration_url,
+      price: event.is_free ? 0 : event.price,
+      priceCurrency: 'INR',
+      availability: 'https://schema.org/InStock',
+    },
+  }
+}
 
 export default function EventDetailsPage() {
   const { id } = useParams()
@@ -34,6 +85,25 @@ export default function EventDetailsPage() {
   const { show } = useToast()
   const [imageFailed, setImageFailed] = useState(false)
   const event = id ? getEvent(id) : undefined
+
+  useSeo(
+    event
+      ? {
+          title: `${event.title} | ${SITE_NAME}`,
+          description:
+            event.description || `${event.title} at ${event.venue_name}, ${event.city}.`,
+          path: `/events/${event.id}`,
+          image: event.image_url ?? DEFAULT_IMAGE,
+          type: 'article',
+          noindex: event.status !== 'approved',
+          jsonLd: event.status === 'approved' ? eventJsonLd(event) : null,
+        }
+      : {
+          title: 'Event not found',
+          description: DEFAULT_DESCRIPTION,
+          noindex: true,
+        }
+  )
 
   if (loading) return <LoadingGrid count={3} />
 

@@ -7,7 +7,10 @@ import ListView from '../components/ListView'
 import { EmptyState, ErrorBanner, LoadingGrid } from '../components/UI'
 import { useData } from '../context/DataContext'
 import { filterEvents, useFilters } from '../hooks/useFilters'
+import { useSeo } from '../hooks/useSeo'
 import { CITY_MAP, DEFAULT_FILTERS } from '../lib/constants'
+import { cityPath } from '../lib/navigation'
+import { DEFAULT_TITLE, SITE_NAME, absoluteUrl } from '../lib/seo'
 
 const MapView = lazy(() => import('../components/MapView'))
 
@@ -26,6 +29,37 @@ export default function CityPage() {
   const filtered = useMemo(
     () => filterEvents(events, { ...filters, city }),
     [events, filters, city]
+  )
+
+  useSeo(
+    meta
+      ? {
+          title: `Events in ${city}`,
+          description: `Discover upcoming events in ${city}, ${meta.state} — music, food, culture, tech, sports and more. Browse what's on in ${city} on Utsav India.`,
+          path: cityPath(city),
+          jsonLd: {
+            '@context': 'https://schema.org',
+            '@type': 'CollectionPage',
+            name: `Events in ${city}`,
+            url: absoluteUrl(cityPath(city)),
+            mainEntity: {
+              '@type': 'ItemList',
+              numberOfItems: filtered.length,
+              itemListElement: filtered.slice(0, 20).map((event, index) => ({
+                '@type': 'ListItem',
+                position: index + 1,
+                name: event.title,
+                url: absoluteUrl(`/events/${event.id}`),
+              })),
+            },
+          },
+        }
+      : {
+          title: DEFAULT_TITLE,
+          description: `Browse events across India by city, category and date on ${SITE_NAME}.`,
+          path: cityPath(city),
+          noindex: true,
+        }
   )
 
   if (!meta) {

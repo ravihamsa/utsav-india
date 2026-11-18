@@ -12,6 +12,7 @@ import {
 import { ErrorBanner, PageHeading } from '../components/UI'
 import { useAuth } from '../context/AuthContext'
 import { useData } from '../context/DataContext'
+import { useSeo } from '../hooks/useSeo'
 import { useToast } from '../context/ToastContext'
 import { CATEGORIES, CITIES, CITY_MAP } from '../lib/constants'
 import type { Category, EventDraft, EventItem } from '../lib/types'
@@ -35,6 +36,12 @@ const emptyForm = {
 }
 
 export default function SubmitEventPage() {
+  useSeo({
+    title: 'Submit an event',
+    description:
+      'Submit your concert, festival, meetup or cultural event to Utsav India and share it with people across the country.',
+    path: '/submit',
+  })
   const { user } = useAuth()
   const { submitEvent } = useData()
   const { show } = useToast()
