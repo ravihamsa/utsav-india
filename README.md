@@ -1,9 +1,9 @@
 # Utsav India — Events Discovery Platform
 
 A React + TypeScript app for discovering events across India, backed by Supabase
-(Postgres, Auth and Row Level Security). Browse events in three ways — list,
-month calendar and an interactive map — with shared city/category/date/price
-filters.
+(Postgres, Auth and Row Level Security), with a local demo mode when no Supabase
+credentials are configured. Browse events in three ways — list, month calendar
+and an interactive map — with shared city/category/date/price filters.
 
 ## Features
 
@@ -54,9 +54,10 @@ Open http://localhost:5173.
 
 ### Demo mode (no credentials needed)
 
-If `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` are missing or left as the
-placeholders, the app runs in **demo mode** with a complete, preloaded sample
-dataset (stored locally, no "demo" prefixes in the data itself):
+If `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` are missing, left as the
+placeholders, or set to a Supabase dashboard URL, the app runs in **demo mode**
+with a complete, preloaded sample dataset (stored locally, no "demo" prefixes in
+the data itself):
 
 - 72 approved events across all 14 cities and 8 categories, including events
   happening today and this week (with images, prices and map coordinates).
@@ -88,11 +89,15 @@ dataset (stored locally, no "demo" prefixes in the data itself):
 
 Go to **Project Settings → API**. Copy:
 
-- **Project URL** — looks like `https://abcdefgh.supabase.co`
-- **anon / public key** — a long `eyJ...` string
+- **Project URL** — looks like `https://abcdefgh.supabase.co`. This is **not**
+  the `https://supabase.com/dashboard/...` URL you see in the browser address
+  bar; using the dashboard URL causes CORS failures.
+- **anon / public key** — either the newer `sb_publishable_...` format or the
+  older long `eyJ...` JWT format. Both work.
 
-> Only use the **anon** key in this frontend. Never put the `service_role` key
-> in the app or in Vercel env vars — it bypasses all Row Level Security.
+> Only use the **anon / publishable** key in this frontend. Never put the
+> `service_role` key in the app or in Vercel env vars — it bypasses all Row Level
+> Security.
 
 ### 3. Run the database setup
 
@@ -139,6 +144,22 @@ select public.set_user_admin('you@example.com', true);
 
 Reload the app — **Admin** now appears in the navigation. Use this account to
 approve or reject the seeded pending submissions.
+
+### Troubleshooting
+
+- **CORS error in the browser console** — `VITE_SUPABASE_URL` must be the
+  **Project URL** (`https://<project-ref>.supabase.co`), not the
+  `https://supabase.com/dashboard/...` address. The app logs a clear error and
+  stays in demo mode if you use the dashboard URL. Restart `npm run dev` (or
+  redeploy) after changing it.
+- **Sign-up/redirect fails** — add your current origin to **Authentication →
+  URL Configuration → Redirect URLs**: `http://localhost:5173/**` locally and
+  `https://your-app.vercel.app/**` when deployed.
+- **"new row violates row-level security policy"** — confirm you ran
+  `supabase/schema.sql` in the same project, and that you are signed in before
+  favouriting, submitting events or setting reminders.
+- **Empty event list** — run `supabase/seed.sql`; only `approved` events are
+  public.
 
 ## Deploying to Vercel
 

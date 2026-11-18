@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Link,
   NavLink,
@@ -180,6 +180,17 @@ function CityStrip() {
   )
 }
 
+/** Reset scroll on page navigation, but not when only URL filters change. */
+function ScrollToTop() {
+  const { pathname } = useLocation()
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
+
+  return null
+}
+
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { isAdmin } = useAuth()
   const location = useLocation()
@@ -194,6 +205,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen flex-col">
+      <ScrollToTop />
       <header className="sticky top-0 z-50 border-b border-ink-800/[0.08] bg-white/95 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           <Brand />
