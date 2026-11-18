@@ -106,6 +106,57 @@ export async function updateEventStatus(
   if (error) throw error
 }
 
+/** Admin edit: change the listing details without touching status/ownership. */
+export async function updateEvent(id: string, draft: EventDraft): Promise<void> {
+  if (!supabase) {
+    saveLocalEvents(
+      localEvents().map((e) => (e.id === id ? { ...e, ...draft } : e))
+    )
+    return
+  }
+  const { error } = await requireSupabase()
+    .from('events')
+    .update(draft)
+    .eq('id', id)
+  if (error) throw error
+}
+
+/** Admin removal. Supabase cascades favourites/reminders via foreign keys. */
+export async function deleteEvent(id: string): Promise<void> {
+  if (!supabase) {
+    saveLocalEvents(localEvents().filter((e) => e.id !== id))
+    Object.keys(localStorage)
+      .filter(
+        (key) =>
+          key.startsWith('utsav:favorites:') ||
+          key.startsWith('utsav:reminders:')
+      )
+      .forEach((key) => {
+        try {
+          const value: unknown = JSON.parse(localStorage.getItem(key) ?? 'null')
+          if (!Array.isArray(value)) return
+          const next = key.startsWith('utsav:favorites:')
+            ? value.filter((item) => item !== id)
+            : value.filter(
+                (item) =>
+                  typeof item === 'object' &&
+                  item !== null &&
+                  (item as { event_id?: string }).event_id !== id
+              )
+          localStorage.setItem(key, JSON.stringify(next))
+        } catch {
+          // Ignore malformed local entries.
+        }
+      })
+    return
+  }
+  const { error } = await requireSupabase()
+    .from('events')
+    .delete()
+    .eq('id', id)
+  if (error) throw error
+}
+
 export async function loadFavorites(userId: string): Promise<string[]> {
   if (!supabase) {
     ensureSeed()

@@ -28,7 +28,8 @@ and an interactive map — with shared city/category/date/price filters.
   pages.
 - **Submissions & moderation** — an open "Submit an Event" form creates
   `pending` events; a protected admin view approves, rejects or unpublishes
-  them. Approved events flow into all three browsing views.
+  them, and can edit listing details or delete events outright. Approved events
+  flow into all three browsing views.
 - **Design** — vibrant saffron / spice / turquoise India-inspired palette (no
   purples), Lucide icons, category colour coding, responsive layout, and
   graceful loading/empty states.
@@ -68,7 +69,7 @@ the data itself):
   | --- | --- | --- |
   | `aanya@utsav.in` | `utsav2026` | Interests, 10 favourites, 5 reminders and personalised recommendations |
   | `rohan@utsav.in` | `utsav2026` | Approved, pending and rejected submissions under "My submissions" |
-  | `admin@utsav.in` | `utsav2026` | Admin review — approve/reject submissions and see them go live |
+  | `admin@utsav.in` | `utsav2026` | Admin review — approve/reject, edit and delete events |
 
 - Any other valid email + a password of 6+ characters also signs you in; emails
   containing `admin` get admin access.
@@ -143,7 +144,10 @@ select public.set_user_admin('you@example.com', true);
 ```
 
 Reload the app — **Admin** now appears in the navigation. Use this account to
-approve or reject the seeded pending submissions.
+approve or reject the seeded pending submissions, edit event details, or delete
+events. If your database predates the current schema, re-run
+`supabase/schema.sql` to ensure the `events_admin_update` and
+`events_admin_delete` RLS policies exist.
 
 ### Troubleshooting
 
@@ -219,7 +223,8 @@ the absolute URLs in the tags.
 | `reminders` | User, event and `minutes_before` |
 
 Key RLS rules: approved events are readable by everyone; anyone can insert a
-`pending` event; only admins can change event status; favourites and reminders
+`pending` event; only admins can change event status, edit listings or delete
+events (deletes cascade to favourites and reminders); favourites and reminders
 are private to their owner.
 
 ## Notes

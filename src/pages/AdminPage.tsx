@@ -3,16 +3,19 @@ import { Link } from 'react-router-dom'
 import {
   Check,
   Clock,
+  Pencil,
   ShieldCheck,
+  Trash2,
   X,
   XCircle,
 } from 'lucide-react'
+import EventEditDialog from '../components/EventEditDialog'
 import { EmptyState, ErrorBanner, PageHeading, Spinner } from '../components/UI'
 import { useData } from '../context/DataContext'
 import { usePrivateSeo } from '../hooks/useSeo'
 import { useToast } from '../context/ToastContext'
 import { formatDate } from '../lib/dateUtils'
-import type { EventStatus } from '../lib/types'
+import type { EventDraft, EventItem, EventStatus } from '../lib/types'
 
 const tabs: { value: EventStatus | 'all'; label: string }[] = [
   { value: 'pending', label: 'Pending' },
@@ -29,10 +32,13 @@ const statusStyles: Record<EventStatus, string> = {
 
 export default function AdminPage() {
   usePrivateSeo('Admin review', 'Review submitted events on Utsav India.')
-  const { allEvents, changeEventStatus, loading, error } = useData()
+  const { allEvents, changeEventStatus, editEvent, removeEvent, loading, error } =
+    useData()
   const { show } = useToast()
   const [tab, setTab] = useState<EventStatus | 'all'>('pending')
   const [busyId, setBusyId] = useState<string | null>(null)
+  const [editing, setEditing] = useState<EventItem | null>(null)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
 
   const counts = useMemo(
     () => ({
@@ -67,12 +73,34 @@ export default function AdminPage() {
     }
   }
 
+  async function saveEdit(draft: EventDraft) {
+    if (!editing) return
+    await editEvent(editing.id, draft)
+    show('Event details saved.')
+  }
+
+  async function remove(id: string) {
+    setBusyId(id)
+    try {
+      await removeEvent(id)
+      show('Event deleted.')
+      setDeletingId(null)
+    } catch (err) {
+      show(
+        err instanceof Error ? err.message : 'Could not delete the event.',
+        'error'
+      )
+    } finally {
+      setBusyId(null)
+    }
+  }
+
   return (
     <div>
       <PageHeading
         eyebrow="Protected area"
         title="Admin review"
-        description="Approve or reject organiser submissions. Approved events appear everywhere across Utsav."
+        description="Approve or reject submissions, edit event details and remove listings. Approved events appear everywhere across Utsav."
       >
         <span className="inline-flex items-center gap-2 rounded-xl bg-saffron-100 px-3 py-2 text-xs font-extrabold text-saffron-800">
           <ShieldCheck className="h-4 w-4" /> Admin access
@@ -166,41 +194,70 @@ export default function AdminPage() {
                     {event.description}
                   </p>
                 </div>
-                <div className="flex shrink-0 gap-2">
-                  {event.status === 'pending' && (
-                    <button
-                      type="button"
-                      disabled={busyId === event.id}
-                      onClick={() => void decide(event.id, 'approved')}
-                      className="btn-primary !px-3 !py-2 !text-xs"
-                    >
-                      <Check className="h-3.5 w-3.5" /> Approve
-                    </button>
-                  )}
-                  {event.status !== 'rejected' && (
-                    <button
-                      type="button"
-                      disabled={busyId === event.id}
-                      onClick={() => void decide(event.id, 'rejected')}
-                      className="btn-secondary !px-3 !py-2 !text-xs text-spice-700"
-                    >
-                      {event.status === 'approved' ? (
-                        <XCircle className="h-3.5 w-3.5" />
-                      ) : (
-                        <X className="h-3.5 w-3.5" />
+                <div className="flex shrink-0 flex-wrap items-center gap-2">
+                  {deletingId === event.id ? (
+                    <>
+                      <span className="text-xs font-bold text-spice-700">
+                        Delete this event?
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setDeletingId(null)}
+                        className="btn-ghost !px-3 !py-2 !text-xs"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        disabled={busyId === event.id}
+                        onClick={() => void remove(event.id)}
+                        className="btn-secondary !px-3 !py-2 !text-xs text-spice-700"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" /> Delete
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      {event.status !== 'approved' && (
+                        <button
+                          type="button"
+                          disabled={busyId === event.id}
+                          onClick={() => void decide(event.id, 'approved')}
+                          className="btn-primary !px-3 !py-2 !text-xs"
+                        >
+                          <Check className="h-3.5 w-3.5" /> Approve
+                        </button>
                       )}
-                      {event.status === 'approved' ? 'Unpublish' : 'Reject'}
-                    </button>
-                  )}
-                  {event.status === 'rejected' && (
-                    <button
-                      type="button"
-                      disabled={busyId === event.id}
-                      onClick={() => void decide(event.id, 'approved')}
-                      className="btn-secondary !px-3 !py-2 !text-xs"
-                    >
-                      <Check className="h-3.5 w-3.5" /> Approve
-                    </button>
+                      {event.status !== 'rejected' && (
+                        <button
+                          type="button"
+                          disabled={busyId === event.id}
+                          onClick={() => void decide(event.id, 'rejected')}
+                          className="btn-secondary !px-3 !py-2 !text-xs text-spice-700"
+                        >
+                          {event.status === 'approved' ? (
+                            <XCircle className="h-3.5 w-3.5" />
+                          ) : (
+                            <X className="h-3.5 w-3.5" />
+                          )}
+                          {event.status === 'approved' ? 'Unpublish' : 'Reject'}
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => setEditing(event)}
+                        className="btn-secondary !px-3 !py-2 !text-xs"
+                      >
+                        <Pencil className="h-3.5 w-3.5" /> Edit
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setDeletingId(event.id)}
+                        className="btn-secondary !px-3 !py-2 !text-xs text-spice-700"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" /> Delete
+                      </button>
+                    </>
                   )}
                 </div>
               </div>
@@ -208,6 +265,14 @@ export default function AdminPage() {
           </div>
         )}
       </div>
+
+      {editing && (
+        <EventEditDialog
+          event={editing}
+          onClose={() => setEditing(null)}
+          onSave={(draft) => saveEdit(draft)}
+        />
+      )}
     </div>
   )
 }

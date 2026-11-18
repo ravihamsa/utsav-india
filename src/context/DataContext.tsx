@@ -12,6 +12,7 @@ import {
   addFavorite,
   addReminder,
   createEvent,
+  deleteEvent,
   loadAllEvents,
   loadApprovedEvents,
   loadFavorites,
@@ -19,6 +20,7 @@ import {
   loadReminders,
   removeFavorite,
   removeReminder,
+  updateEvent,
   updateEventStatus,
 } from '../lib/dataService'
 import type {
@@ -44,6 +46,8 @@ interface DataContextValue {
   deleteReminder: (id: string) => Promise<void>
   submitEvent: (draft: EventDraft) => Promise<EventItem>
   changeEventStatus: (id: string, status: EventStatus) => Promise<void>
+  editEvent: (id: string, draft: EventDraft) => Promise<void>
+  removeEvent: (id: string) => Promise<void>
 }
 
 const DataContext = createContext<DataContextValue | null>(null)
@@ -175,6 +179,22 @@ export function DataProvider({ children }: { children: ReactNode }) {
     []
   )
 
+  const editEvent = useCallback(
+    async (id: string, draft: EventDraft) => {
+      await updateEvent(id, draft)
+      await refresh()
+    },
+    [refresh]
+  )
+
+  const removeEvent = useCallback(
+    async (id: string) => {
+      await deleteEvent(id)
+      await refresh()
+    },
+    [refresh]
+  )
+
   const value = useMemo<DataContextValue>(
     () => ({
       events,
@@ -192,6 +212,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
       deleteReminder,
       submitEvent,
       changeEventStatus,
+      editEvent,
+      removeEvent,
     }),
     [
       events,
@@ -209,6 +231,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
       deleteReminder,
       submitEvent,
       changeEventStatus,
+      editEvent,
+      removeEvent,
     ]
   )
 

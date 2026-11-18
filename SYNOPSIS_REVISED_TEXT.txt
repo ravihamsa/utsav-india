@@ -1,0 +1,178 @@
+REVISED SYNOPSIS TEXT — ready to paste into Updated_Project_SynopsisFormat_2026.docx.rtf
+=====================================================================================
+
+How to use: copy each numbered section below into the matching section of the RTF.
+Keep the document's existing formatting, table rows and embedded block diagram.
+The header/template fields listed at the end still need your team's details.
+
+PROJECT TITLE (fill in the quoted field in the template):
+"Utsav India — A Centralised Event Discovery Platform"
+
+SDG Goals Mapped (suggested text for the empty SDG cell):
+"SDG 11 — Sustainable Cities and Communities; SDG 9 — Industry, Innovation and
+Infrastructure"
+
+
+1. Introduction
+-------------------------------------------------------------------------------------
+Information about local festivals, cultural programmes, exhibitions, college events
+and community gatherings is scattered across social media, websites and local
+announcements. Users often need to check several sources to discover events in
+different cities. "Utsav India" brings this information into one responsive web
+application. Users can browse approved events in list, calendar and map views,
+search by keyword, and filter by city, category, date range and entry type. Each
+listing shows the venue, timings, organiser, pricing and a registration link. Users
+can sign in, save favourites, set reminders, follow their interests and submit
+events for review.
+
+
+2. Literature Survey
+-------------------------------------------------------------------------------------
+A review of common event-discovery methods identifies social media posts,
+dedicated event-listing websites, and official city, institution or festival
+websites. Social media provides timely updates but is difficult to search
+systematically. Event-listing sites organise information but often omit smaller
+community and cultural events. Official websites are reliable for their own events
+but require users to visit multiple sources. Comparable platforms were reviewed for
+features such as city/date/category filtering, event detail pages, calendar views,
+map-based discovery and user accounts. This project combines those features in a
+single, consistently organised directory backed by a structured database.
+
+
+3. Existing System and their Limitations
+-------------------------------------------------------------------------------------
+Users currently rely on separate social media pages, event websites, posters and
+official announcements. Information is often duplicated, scattered, difficult to
+filter by city or date, or outdated, and smaller events receive limited visibility.
+The proposed system centralises listings, provides city/date/category/date-range
+filters, and presents event details in a consistent format. Organisers submit
+listings through a form; an administrator reviews, approves, edits or removes
+records, which helps reduce inaccurate or duplicate information.
+
+
+4. Problem Statement of Proposed Project with Block Diagram
+-------------------------------------------------------------------------------------
+Problem statement: Users need a simple way to discover local events and festivals
+across multiple cities without searching many separate sources. The project
+develops a responsive web application that stores event details in a hosted
+PostgreSQL database and displays searchable listings based on user-selected
+filters. Approved records are published to all browsing views; pending submissions
+remain visible only to their submitter and the administrator.
+
+Block diagram (describe/draw in the space provided in the template):
+
+    Users / Organisers
+            |
+            v
+    Responsive Web UI (React + TypeScript + Tailwind CSS)
+    +----------------------+-----------------------+
+    |                      |                       |
+    v                      v                       v
+Discovery views      Event details          Submission form
+(List / Calendar /   (venue, timing,         (pending event
+ Map + search and     organiser, favourites,  records)
+ filters)             reminders, share)             |
+            |                      |                |
+            +----------+-----------+----------------+
+                       v
+    Supabase: Auth + PostgreSQL database + Row Level Security
+                       ^
+                       |
+              Admin panel (approve / reject / edit / delete)
+                       |
+            approved events published to discovery
+
+If credentials are absent, the same UI runs against versioned sample data in
+browser localStorage so that the project can be demonstrated offline.
+
+
+5. Objectives of the Project Work
+-------------------------------------------------------------------------------------
+ 1) Develop a simple, responsive web interface for event discovery.
+ 2) Organise events by city, date, category, date range and entry type, with list,
+    calendar and map views.
+ 3) Display event title, description, venue, date, time, organiser and registration
+    or source link.
+ 4) Provide keyword search and filtering across cities and categories.
+ 5) Support organiser submissions and administrator review, approval, editing and
+    removal of event records.
+ 6) Improve awareness of local cultural, educational and community activities, with
+    user accounts, favourites and reminders supporting repeat use.
+
+
+6. Methodology
+-------------------------------------------------------------------------------------
+The project follows these phases:
+ (1) Gather requirements and identify user needs.
+ (2) Design page layouts and the event data structure (events, profiles,
+     favourites and reminders).
+ (3) Build the responsive interface with React 18, TypeScript, Tailwind CSS and
+     React Router.
+ (4) Use Supabase (hosted PostgreSQL, authentication and Row Level Security) as
+     the backend; Leaflet with OpenStreetMap tiles provides the map view.
+ (5) Implement listings, search, filters, calendar/map views, event details,
+     accounts, favourites, reminders and the organiser submission workflow.
+ (6) Implement administrator approval, rejection/unpublishing, editing and
+     deletion of event records, with related favourites and reminders removed
+     along with a deleted event.
+ (7) Test with manually entered sample events from multiple cities for usability,
+     correct filtering, data accuracy and role-based access, then fix issues and
+     prepare the demonstration. Event records are curated manually rather than
+     gathered through automated scraping. A localStorage fallback keeps the app
+     usable when Supabase credentials are not configured.
+
+
+7. Innovativeness and Relevance of the Project
+-------------------------------------------------------------------------------------
+The main value is centralised discovery of local and cultural events across
+multiple cities in one interface. Three browsing modes (list, calendar and map),
+keyword and multi-filter search, personalised interests, favourites and reminders
+make relevant activities easier to find and remember. Organiser submissions with
+administrator review, editing and removal improve consistency without requiring a
+separate content-management system. The project relates to SDG 11 (Sustainable
+Cities and Communities) by improving awareness of community and cultural
+activities, and to SDG 9 (Industry, Innovation and Infrastructure) through a
+practical, widely accessible digital information service. The implementation uses
+current web technologies while remaining suitable for a beginner-to-intermediate
+level project.
+
+
+8. Expected Outcome
+-------------------------------------------------------------------------------------
+The outcome is a working, responsive web application with an event home page,
+searchable and filterable listings in list, calendar and map views, individual
+event detail pages, user accounts with favourites and reminders, and an
+administrator-managed event catalogue with approval, editing and deletion. Users
+can discover events across the cities in the database without visiting multiple
+sites, and organisers can submit events for review. Testing uses sample records
+and test cases for search, filters, event-detail display, role-based access,
+administrator actions, usability and data accuracy. The deployed application is
+shareable by URL with search-engine and social-media previews.
+
+Test cases (summary):
+ - Browse approved events; verify list, calendar and map views show the same city
+   and category filters.
+ - Search by keyword and filter by city, category, date range and free/paid;
+   verify results and clear/reset behaviour.
+ - Open an event; verify title, description, venue, timing, organiser, price and
+   registration link, then return to the previous list without losing filters.
+ - Sign up/sign in; verify session persistence, interests, favourites and
+   reminders survive reload; set and delete a reminder.
+ - Submit an event; verify it appears as pending to the submitter and admin only,
+   and is invisible in public listings until approved.
+ - As admin, approve a pending event (appears publicly), unpublish it (disappears
+   publicly), edit its details (changes appear everywhere) and delete it (record
+   and its favourites/reminders are removed).
+ - Verify a non-admin cannot open the admin page or change event status/details.
+
+
+TEMPLATE FIELDS STILL TO FILL MANUALLY
+-------------------------------------------------------------------------------------
+- Date, Course section, Batch No and the four USN / Name / E-mail / Contact rows.
+- Internal Guide Details.
+- Project Title in the header (use the suggested title above or your own).
+- SDG Goals Mapped cell (use the suggested mapping above).
+- Signatures/approval fields as required by the department.
+
+The embedded pictures in the RTF (including the block diagram area) were left
+untouched; insert or confirm the diagram in the document itself.

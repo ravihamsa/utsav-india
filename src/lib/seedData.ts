@@ -46,7 +46,7 @@ export const SEED_ACCOUNTS: SeedAccount[] = [
     fullName: 'Meera Iyer',
     interests: ['culture', 'community'],
     isAdmin: true,
-    role: 'Admin — approve or reject submissions',
+    role: 'Admin — approve, edit & remove events',
   },
 ]
 
